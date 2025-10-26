@@ -1,10 +1,8 @@
 // Minimal JS: mobile nav + year + auto theme fallback
 document.addEventListener('DOMContentLoaded', function () {
-  // Year
   const y = new Date().getFullYear();
   document.getElementById('year').textContent = y;
 
-  // Mobile nav toggle
   const toggle = document.getElementById('mobileToggle');
   const navLinks = document.querySelector('.nav-links');
   toggle && toggle.addEventListener('click', () => {
@@ -24,15 +22,43 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Smooth scroll for internal links
-  document.querySelectorAll('a[href^="#"]').forEach(a=>{
-    a.addEventListener('click', e=>{
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
       const target = document.querySelector(a.getAttribute('href'));
-      if(target){
+      if (target) {
         e.preventDefault();
-        target.scrollIntoView({behavior:'smooth',block:'start'});
-        // close mobile nav
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         if (window.innerWidth < 820) navLinks.style.display = '';
       }
     });
   });
 });
+// Floating tilt + flip fix (cleaned up)
+const bizCard = document.getElementById('bizCard');
+if (bizCard) {
+  let isFlipped = false;
+
+  // Subtle tilt effect when hovering (disabled when flipped)
+  bizCard.addEventListener('mousemove', e => {
+    if (isFlipped) return;
+    const rect = bizCard.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const rotateX = ((y / rect.height) - 0.5) * 10;
+    const rotateY = ((x / rect.width) - 0.5) * -10;
+    bizCard.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  });
+
+  bizCard.addEventListener('mouseleave', () => {
+    if (isFlipped) return;
+    bizCard.style.transform = 'rotateX(0deg) rotateY(0deg)';
+  });
+
+  // Flip on click
+  bizCard.addEventListener('click', () => {
+    isFlipped = !isFlipped;
+    bizCard.classList.toggle('flipped', isFlipped);
+    // Reset inline transform so flip works properly
+    if (isFlipped) bizCard.style.transform = '';
+  });
+}
